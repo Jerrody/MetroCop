@@ -22,7 +22,7 @@ namespace UI
 
         private void Awake()
         {
-            _camera = GetComponentInChildren<Camera>();
+            _camera = FindFirstObjectByType<Camera>();
             _cameraStartPosition = _camera.transform.position;
 
             playButton.onClick.AddListener(OnPlay);
@@ -37,10 +37,10 @@ namespace UI
         private void Update()
         {
             var cameraTransform = _camera.transform;
-            cameraTransform.position = Vector3.SmoothDamp(cameraTransform.position, cameraEndPosition,
-                ref _currentCameraVelocity, speed * Time.deltaTime);
+            cameraTransform.position =
+                Vector3.Lerp(cameraTransform.position, cameraEndPosition, speed * Time.deltaTime);
 
-            if (Vector3.Distance(cameraTransform.position, cameraEndPosition) < 0.1f)
+            if (Vector3.Distance(cameraTransform.position, cameraEndPosition) < 10.0f)
             {
                 enabled = false;
 
