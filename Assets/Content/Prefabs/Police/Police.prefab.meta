@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f49dd7b943406c04d83a14cff29744ea
+labels:
+- car
+- highway
+- interceptor
+- patrol
+- police
+- sedan
+- vehicle
+timeCreated: 1487459074
+licenseType: Free
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

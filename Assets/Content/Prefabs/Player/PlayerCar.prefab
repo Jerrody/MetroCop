@@ -523,10 +523,12 @@ MonoBehaviour:
   healthComponent:
     maxHealth: 100
   positionsOnRoad:
-  - {x: 586.04, y: 9.3, z: 93.97}
-  - {x: 586.04, y: 9.3, z: 98.1}
-  - {x: 586.04, y: 9.3, z: 102}
-  - {x: 586.04, y: 9.3, z: 106.1}
+  - {x: 586.04, y: 0.05000019, z: 93.97}
+  - {x: 586.04, y: 0.05000019, z: 98.1}
+  - {x: 586.04, y: 0.05000019, z: 102}
+  - {x: 586.04, y: 0.05000019, z: 106.1}
+  <speed>k__BackingField: 1
+  increaseSpeedRate: 0.1
 --- !u!1 &2281508861406185841
 GameObject:
   m_ObjectHideFlags: 0
