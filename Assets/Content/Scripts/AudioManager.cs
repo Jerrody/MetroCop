@@ -69,7 +69,7 @@ namespace Global
 
         private void Start()
         {
-            musicSource.volume = _musicVolume;
+//            musicSource.volume = _musicVolume;
             _soundEffects.ForEach(soundEffect => soundEffect.gameObject.SetActive(false));
         }
 

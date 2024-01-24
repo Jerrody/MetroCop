@@ -22,8 +22,6 @@ namespace Gameplay
 
         private void Awake()
         {
-            PlayerCarController.ChangedPositionEvent += OnChangedPosition;
-
             _player = FindFirstObjectByType<PlayerCarController>();
             _ui = FindFirstObjectByType<UiController>();
         }
@@ -35,22 +33,6 @@ namespace Gameplay
 
         private void OnChangedPosition(int roadIndex)
         {
-        }
-
-        private IEnumerator SpawnPolice()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(3.0f);
-
-                if (_currentActivePolice < maxActivePolice)
-                {
-                    var police = Instantiate(policePrefab, transform);
-                    _currentActivePolice++;
-
-                    var activeRoadIndex = _player.CurrentPositionIndex;
-                }
-            }
         }
     }
 }

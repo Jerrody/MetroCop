@@ -1,7 +1,7 @@
-using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using Cars;
+using Road;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
@@ -12,7 +12,6 @@ namespace Player
     public sealed class PlayerCarController : CarController
     {
         public static PlayerCarController instance { get; private set; }
-        public static event Action<int> ChangedPositionEvent;
 
         [Header("Info")] [SerializeField] private Vector3[] positionsOnRoad;
 
@@ -47,16 +46,10 @@ namespace Player
         {
             CurrentPositionIndex = Random.Range(default, positionsOnRoad.Length);
             var newPosition = positionsOnRoad[CurrentPositionIndex];
-            ChangedPositionEvent.Invoke(CurrentPositionIndex);
             newPosition.x = _transform.position.x;
             _transform.position = newPosition;
 
             StartCoroutine(IncreaseSpeed());
-        }
-
-        private void OnDestroy()
-        {
-            ChangedPositionEvent = null;
         }
 
         private void Update()
@@ -73,13 +66,25 @@ namespace Player
             _transform.position = Vector3.Lerp(playerPosition, newPosition, speed * Time.deltaTime);
         }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            /*if (other.gameObject.TryGetComponent<PoliceController>(out var policeCar))
+            {
+                policeCar.DestroyCar();
+            }*/
+            if (other.gameObject.TryGetComponent<CanisterController>(out var canister))
+            {
+                Destroy(canister.gameObject);
+                healthComponent.Heal(canister.healAmount);
+            }
+        }
+
         public void OnMoveDown(InputAction.CallbackContext ctx)
         {
             if (ctx.started && CurrentPositionIndex != default)
             {
                 CurrentPositionIndex--;
                 Move();
-                ChangedPositionEvent.Invoke(CurrentPositionIndex);
             }
         }
 
@@ -89,7 +94,6 @@ namespace Player
             {
                 CurrentPositionIndex++;
                 Move();
-                ChangedPositionEvent.Invoke(CurrentPositionIndex);
             }
         }
 
@@ -101,7 +105,7 @@ namespace Player
             nextPosition.x = playerPosition.x;
             _transform.position = nextPosition;
         }
-
+        
         public void DecreaseSpeed(float amount)
         {
             speed = Mathf.Clamp(speed - amount, 14.0f, maxSpeed);

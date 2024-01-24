@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Player;
 using UnityEngine;
@@ -38,15 +37,22 @@ namespace Cars
             while (!_isAtPositionWithPlayer)
             {
                 var playerPosition = _playerCar.transform.position;
-                var newPosition = _transform.position;
+                var position = _transform.position;
+                var newPosition = position;
                 newPosition.x = playerPosition.x;
 
-                _transform.position = Vector3.Lerp(_transform.position,
+                position = Vector3.Lerp(position,
                     newPosition,
                     (_playerCar.Speed + 1.0f) * Time.deltaTime);
+                _transform.position = position;
 
                 yield return null;
             }
         }
+
+        /*public void DestroyCar()
+        {
+            PoliceManager.DestroyPoliceEvent.Invoke();
+        }*/
     }
 }
