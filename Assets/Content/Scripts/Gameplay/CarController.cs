@@ -10,7 +10,7 @@ namespace Cars
 
         [Header("Info")] [SerializeField] private int maxHealth;
 
-        public float HealthPercentage => health / maxHealth;
+        public float HealthPercentage => (float)health / maxHealth;
 
         public int health { get; set; }
 
@@ -27,7 +27,7 @@ namespace Cars
             {
                 health = Mathf.Clamp(health - damageAmount, default, maxHealth);
 
-                if (health < default(int))
+                if (health <= default(int))
                 {
                     DeathEvent?.Invoke();
                 }
@@ -43,10 +43,8 @@ namespace Cars
         }
     }
 
-
     public abstract class CarController : MonoBehaviour
     {
-        [Header("Info")]
-        [SerializeField] protected HealthComponent healthComponent;
+        [Header("Info")] [SerializeField] protected HealthComponent healthComponent;
     }
 }

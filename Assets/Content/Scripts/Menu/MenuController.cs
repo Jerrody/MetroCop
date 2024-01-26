@@ -11,11 +11,11 @@ namespace UI
     {
         private const string SoundKey = "Sound";
         private const string MusicKey = "Music";
-        private const string ScoreKey = "Menu";
+        public const string ScoreKey = "Menu";
 
         public static float EffectsValue;
-        public static float MusicValue;
-        public static int ScoreValue;
+        private static float _musicValue;
+        private static int _scoreValue;
 
         [Header("References")] [SerializeField]
         private AudioSource musicSource;
@@ -54,12 +54,12 @@ namespace UI
             }
 
             EffectsValue = PlayerPrefs.GetFloat(SoundKey);
-            MusicValue = PlayerPrefs.GetFloat(MusicKey);
-            ScoreValue = PlayerPrefs.GetInt(ScoreKey);
+            _musicValue = PlayerPrefs.GetFloat(MusicKey);
+            _scoreValue = PlayerPrefs.GetInt(ScoreKey);
 
-            musicSlider.value = MusicValue;
+            musicSlider.value = _musicValue;
             effectsSlider.value = EffectsValue;
-            scoreText.text = $"Score: {ScoreValue.ToString()}";
+            scoreText.text = $"Score: {_scoreValue.ToString()}";
             SetMusicSource();
         }
 
@@ -102,7 +102,7 @@ namespace UI
 
         public void OnMusicSlider(float value)
         {
-            MusicValue = value;
+            _musicValue = value;
             SetKey(MusicKey, value);
 
             SetMusicSource();
@@ -136,7 +136,7 @@ namespace UI
 
         private void SetMusicSource()
         {
-            musicSource.volume = MusicValue;
+            musicSource.volume = _musicValue;
         }
     }
 }

@@ -50,9 +50,10 @@ namespace Cars
             }
         }
 
-        /*public void DestroyCar()
+        public void DestroyCar()
         {
+            Destroy(gameObject);
             PoliceManager.DestroyPoliceEvent.Invoke();
-        }*/
+        }
     }
 }

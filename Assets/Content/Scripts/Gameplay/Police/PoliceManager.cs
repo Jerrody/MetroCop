@@ -4,6 +4,7 @@ using Cars;
 using Player;
 using Ui;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public sealed class PoliceManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public sealed class PoliceManager : MonoBehaviour
     [Header("Prefabs")] [SerializeField] private PoliceController policeCar;
 
     [Header("Info")] [SerializeField] private int maxPolice;
+    [SerializeField] private int damage;
     [SerializeField] private float speedForManhunt = 10.0f;
     [SerializeField] private Vector3[] positionsOnRoad;
 
@@ -31,6 +33,11 @@ public sealed class PoliceManager : MonoBehaviour
         StartCoroutine(CheckPlayerManHuntStatus());
     }
 
+    private void Start()
+    {
+        StartCoroutine(DamagePlayer());
+    }
+
     private void OnDestroy()
     {
         DestroyPoliceEvent = null;
@@ -39,7 +46,7 @@ public sealed class PoliceManager : MonoBehaviour
     private void OnDestroyPolice()
     {
         _destroyedPolices++;
-        _currentActivePolice--;
+        _currentActivePolice = Mathf.Clamp(_currentActivePolice - 1, default, int.MaxValue);
     }
 
     private IEnumerator DecreaseManHuntLevel()
@@ -58,7 +65,7 @@ public sealed class PoliceManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(2.0f);
+            yield return new WaitForSeconds(4.0f);
 
             CheckManHunterStatus();
 
@@ -73,28 +80,48 @@ public sealed class PoliceManager : MonoBehaviour
     {
         if (_playerCar.Speed > speedForManhunt && _destroyedPolices > default(int))
         {
-            _currentManHunt = Mathf.Clamp(_currentManHunt + 1, default, maxPolice);
+            _currentManHunt = Mathf.Clamp(_currentManHunt + 1, default, int.MaxValue);
             UiController.SetStarsEvent.Invoke(_currentManHunt);
         }
     }
 
     private void SpawnPolice()
     {
-        if (_currentActivePolice < maxPolice)
+        if (_currentActivePolice < maxPolice && Random.Range(0, 1) == default)
         {
-            var police = Instantiate(policeCar, transform);
-            _currentActivePolice++;
-
+            var xPosition = _playerCar.transform.position.x;
             foreach (var positionOnRoad in positionsOnRoad)
             {
-                var ray = new Ray(positionOnRoad + new Vector3(default, 5.0f, default), Vector3.down);
+                var random = new System.Random();
+                if (random.NextDouble() >= 0.5f)
+                {
+                    continue;
+                }
+
+                var currentPositionOnRoad = positionOnRoad;
+                currentPositionOnRoad.x = xPosition;
+                var ray = new Ray(currentPositionOnRoad + new Vector3(default, 5.0f, default), Vector3.down);
                 var isHit = Physics.Raycast(ray, 10_000f, 1 << Layers.PoliceCar);
                 if (!isHit)
                 {
-                    police.transform.position = positionOnRoad;
+                    var police = Instantiate(policeCar, transform);
+                    _currentActivePolice++;
+
+                    police.transform.position = currentPositionOnRoad;
                     break;
                 }
             }
+        }
+    }
+
+    private IEnumerator DamagePlayer()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1.0f);
+
+            var damageToPlayer = damage * _currentActivePolice;
+            _playerCar.TakeDamage(damageToPlayer);
         }
     }
 }

@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
+using Cars;
 using Player;
 using TMPro;
+using UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Ui
@@ -18,7 +21,7 @@ namespace Ui
     {
         public static Action<int> SetStarsEvent;
         public static Action PlayerDeathEvent;
-        public static Action<int> AddScoreEvent;
+        public static Action<int> AddScoresEvent;
 
         [Header("References")] [SerializeField]
         private RectTransform gameplay;
@@ -28,37 +31,36 @@ namespace Ui
         [SerializeField] private RectTransform manhuntRoot;
 
         [Header("Info")] [SerializeField] private ScoreModifier[] scoreModifiers;
-        [SerializeField] private int scoreAddition;
 
         [Header("TMP_Texts")] [SerializeField] private TMP_Text speedText;
         [SerializeField] private TMP_Text scoreText;
-
-        [Header("Buttons")] [SerializeField] private Button exitButton;
+        [SerializeField] private TMP_Text endScreenScoreText;
 
         [Header("Images")] [SerializeField] private Image healthBar;
+        [SerializeField] private Image[] stars;
 
         private PlayerCarController _player;
 
-        private Image[] _stars;
 
         private int _score;
 
         private void Awake()
         {
             _player = FindFirstObjectByType<PlayerCarController>();
+
+            stars = manhuntRoot.GetComponentsInChildren<Image>(true);
+
             PlayerDeathEvent += OnPlayerDeath;
-
-            _stars = manhuntRoot.GetComponentsInChildren<Image>(true);
-
             SetStarsEvent += OnSetStars;
+            AddScoresEvent += OnAddScore;
         }
 
         private void Start()
         {
             gameplay.gameObject.SetActive(true);
-            escapeMenu.gameObject.SetActive(false);
             deathScreen.gameObject.SetActive(false);
 
+            PlayerPrefs.SetInt(MenuController.ScoreKey, _score);
             StartCoroutine(CheckScore());
         }
 
@@ -81,21 +83,35 @@ namespace Ui
 
         private void OnPlayerDeath()
         {
+            enabled = false;
+
             gameplay.gameObject.SetActive(false);
-            escapeMenu.gameObject.SetActive(false);
             deathScreen.gameObject.SetActive(true);
+            
+            scoreText.gameObject.SetActive(false);
+
+            _player.enabled = false;
+            var policeManager = FindObjectOfType<PoliceManager>();
+            policeManager.enabled = false;
+            var polices = FindObjectsOfType<PoliceController>();
+            foreach (var police in polices)
+            {
+                Destroy(police.gameObject);
+            }
+
+            endScreenScoreText.text = $"Score: {_score}";
         }
 
         private void OnSetStars(int count)
         {
-            foreach (var star in _stars)
+            foreach (var star in stars)
             {
                 star.gameObject.SetActive(false);
             }
 
             for (int i = default; i < count; i++)
             {
-                _stars[i].gameObject.SetActive(true);
+                stars[i].gameObject.SetActive(true);
             }
         }
 
@@ -129,10 +145,9 @@ namespace Ui
             scoreText.text = $"Score: {_score.ToString()}";
         }
 
-        // TODO: Change to Exit To Menu
-        private void OnClickExit()
+        public void OnClickExit()
         {
-            Application.Quit();
+            SceneManager.LoadScene(Scenes.Menu);
         }
     }
 }

@@ -1,8 +1,5 @@
-using System;
-using Player;
-using Road;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Road;
 
 public sealed class RoadController : MonoBehaviour
 {
@@ -15,26 +12,17 @@ public sealed class RoadController : MonoBehaviour
     [field: SerializeField]
     public float length { get; private set; }
 
-    private PlayerCarController _playerCar;
-
-    [NonSerialized] public bool IsActiveRoad;
-
     private CanisterController _canister;
 
     private void Start()
     {
-        _playerCar = FindFirstObjectByType<PlayerCarController>();
-        
         SpawnCanister();
     }
-
-    private void Update()
+    
+    public void MoveForward(Vector3 newPosition)
     {
-        /*if (IsActiveRoad && Vector3.Distance(_playerCar.transform.position, transform.position) > length * 1.5f)
-        {
-            RoadManager.MoveCarEvent.Invoke();
-            SpawnCanister();
-        }*/
+        transform.position = newPosition;
+        SpawnCanister();
     }
 
     private void SpawnCanister()
@@ -44,8 +32,9 @@ public sealed class RoadController : MonoBehaviour
             Destroy(_canister.gameObject);
         }
 
-        var spawnPoint = canisterSpawnPoints[Random.Range(default, canisterSpawnPoints.Length)];
-        _canister = Instantiate(canisterPrefab, spawnPoint.position + new Vector3(default, 0.5f, default),
-            Quaternion.Euler(new(default, Random.Range(default, 360.0f), default)));
+        var spawnIndex = UnityEngine.Random.Range(0, canisterSpawnPoints.Length);
+        var spawnPoint = canisterSpawnPoints[spawnIndex];
+        _canister = Instantiate(canisterPrefab, spawnPoint.position + new Vector3(0, 0.5f, 0),
+            Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0));
     }
 }

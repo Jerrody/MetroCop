@@ -1,42 +1,40 @@
-using System;
 using System.Linq;
+using Player;
 using UnityEngine;
 
-namespace Road
+namespace Game.Platforms
 {
-    public sealed class RoadManager : MonoBehaviour
+    public sealed class PlatformManager : MonoBehaviour
     {
-        public static Action MoveCarEvent;
+        private float _platformZAxisLength;
+        private int _currentLastPlatform;
 
         private RoadController[] _roads;
-
-        private int _currentActiveRoadIndex;
-        private int _currentLastRoadIndex;
-
+        private PlayerCarController _playerCar;
+        
         private void Awake()
         {
+            _playerCar = FindFirstObjectByType<PlayerCarController>();
             _roads = FindObjectsOfType<RoadController>(true);
-            _roads.First().IsActiveRoad = true;
-            _currentLastRoadIndex = _roads.Length - 1;
-
-            MoveCarEvent += OnMoveCar;
+            _roads = _roads.OrderByDescending(x => x.transform.position.x).ToArray();
+            _platformZAxisLength = _roads.First().length;
         }
 
-        private void OnDestroy()
+        private void Update()
         {
-            MoveCarEvent = null;
+            if (Vector3.Distance(_playerCar.transform.position, _roads[_currentLastPlatform].transform.position) >
+                _platformZAxisLength + 20.0f)
+            {
+                MoveForwardLast(_currentLastPlatform);
+                _currentLastPlatform = (_currentLastPlatform + 1) % _roads.Length;
+            }
         }
 
-        private void OnMoveCar()
+        private void MoveForwardLast(int platformIndex)
         {
-            _roads[_currentActiveRoadIndex].IsActiveRoad = false;
-            _currentLastRoadIndex = _currentActiveRoadIndex;
-
-            _currentActiveRoadIndex = (_currentActiveRoadIndex + 1) % _roads.Length;
-            _roads[_currentActiveRoadIndex].IsActiveRoad = true;
-
-            _roads[_currentLastRoadIndex].transform.position = _roads[_currentActiveRoadIndex].transform.position +
-                                                               Vector3.up * _roads[_currentActiveRoadIndex].length;
+            var roadPosition = _roads[platformIndex].transform.position;
+            roadPosition.x -= _platformZAxisLength * 3;
+            _roads[platformIndex].MoveForward(roadPosition);
         }
     }
 }

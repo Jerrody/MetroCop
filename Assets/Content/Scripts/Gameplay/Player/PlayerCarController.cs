@@ -2,6 +2,7 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using Cars;
 using Road;
+using Ui;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
@@ -68,10 +69,11 @@ namespace Player
 
         private void OnTriggerEnter(Collider other)
         {
-            /*if (other.gameObject.TryGetComponent<PoliceController>(out var policeCar))
+            if (other.gameObject.TryGetComponent<PoliceController>(out var policeCar))
             {
+                UiController.AddScoresEvent.Invoke(20);
                 policeCar.DestroyCar();
-            }*/
+            }
             if (other.gameObject.TryGetComponent<CanisterController>(out var canister))
             {
                 Destroy(canister.gameObject);
@@ -106,16 +108,16 @@ namespace Player
             _transform.position = nextPosition;
         }
         
-        public void DecreaseSpeed(float amount)
-        {
-            speed = Mathf.Clamp(speed - amount, 14.0f, maxSpeed);
-        }
-
         private void OnDeath()
         {
             healthComponent.DeathEvent -= OnDeath;
 
-            // TODO: Call UI.
+            UiController.PlayerDeathEvent.Invoke();
+        }
+
+        public void TakeDamage(int damage)
+        {
+            healthComponent.TakeDamage(damage);
         }
 
         private IEnumerator IncreaseSpeed()

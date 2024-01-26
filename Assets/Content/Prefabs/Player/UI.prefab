@@ -1031,8 +1031,25 @@ MonoBehaviour:
   gameplay: {fileID: 8754479176489774342}
   escapeMenu: {fileID: 9054012160748476015}
   deathScreen: {fileID: 2008611525394647533}
+  manhuntRoot: {fileID: 0}
+  scoreModifiers:
+  - speed: 0
+    modifier: 1
+  - speed: 5
+    modifier: 2
+  - speed: 15
+    modifier: 3
   speedText: {fileID: 4456238805122162009}
+  scoreText: {fileID: 0}
+  endScreenScoreText: {fileID: 0}
+  exitButton: {fileID: 0}
   healthBar: {fileID: 386491717696188344}
+  stars:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &8785724709495208669
 GameObject:
   m_ObjectHideFlags: 0
